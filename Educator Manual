@@ -1,3 +1,4 @@
+
 Project-Based Learning Course Overview: Implementing Cryptography Algorithms in C
 About the Project
 In this project, students will embark on a comprehensive journey into the world of cryptography by implementing essential algorithms for encryption, decryption, hashing, and digital signatures using C programming. The project is structured to provide a robust hands-on learning experience that promotes a deep understanding of cryptographic principles. By utilizing fundamental data structures, particularly arrays, and focusing on critical algorithms such as modular arithmetic and prime number generation, students will grasp the underlying mechanics that contribute to cryptographic security.
