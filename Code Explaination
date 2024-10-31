@@ -1,0 +1,91 @@
+1. Prime Number Check - is_prime(int num)
+
+This function checks if a given integer `num` is a prime number:
+- It first handles small numbers and divides by 2 and 3 directly.
+- Then, it checks divisibility starting from 5 and increments by 6 to skip even numbers. If any divisor is found up to the square root of `num`, it returns `0` (not prime); otherwise, it returns `1` (prime).
+  
+This helps in verifying if numbers generated for RSA keys are primes.
+
+
+2. Prime Number Generation - `generate_prime(int limit)`
+
+This function generates a random prime number less than a specified `limit`:
+- It generates a random integer and uses `is_prime` to check if it’s a prime.
+- This repeats until a prime number is found, which is then returned.
+
+In the context of RSA, two large primes are needed to generate the keys.
+
+3. Greatest Common Divisor - `gcd(int a, int b)`
+
+This function calculates the Greatest Common Divisor (GCD) of two numbers:
+- It uses the Euclidean algorithm, which iteratively replaces `a` with `b` and `b` with `a % b` until `b` becomes zero. The last non-zero `a` is the GCD.
+
+RSA requires the public exponent `e` to be coprime with Euler’s Totient `φ(n)`, so `gcd` helps verify that.
+
+4. Modular Exponentiation - `mod_exp(int base, int exp, int mod)`
+
+This function computes `(base^exp) % mod` efficiently using exponentiation by squaring:
+- It iteratively squares the base and multiplies it to the result when the exponent is odd.
+- Each multiplication is taken modulo `mod` to keep the number manageable and to improve performance.
+  
+Modular exponentiation is a core operation in RSA encryption and decryption because it enables the handling of large numbers efficiently.
+
+5. RSA Key Generation - `generate_keys()`
+
+This function generates the public and private keys for RSA:
+1. Generate Primes: It calls `generate_prime` twice to get two primes `p` and `q`.
+2. Calculate Modulus (n): Multiplies `p` and `q` to get `n`, which is part of both public and private keys.
+3. Calculate Totient (φ(n)): Computes `φ(n) = (p - 1) * (q - 1)`, which counts numbers coprime with `n`.
+4. Choose Public Key (e): It starts with `e = 3` and increments `e` until `gcd(e, φ(n)) == 1`, ensuring `e` is coprime with `φ(n)`.
+5. Calculate Private Key (d): Solves for `d` in the equation `d * e ≡ 1 (mod φ(n))` using a loop with variable `k` to find an integer solution.
+
+This function returns a struct containing the keys (`e`, `d`, and `n`) for encryption and decryption.
+
+6. Encryption - `encrypt(int message, int public_key, int modulus)`
+
+This function encrypts a message using the RSA algorithm:
+- It calls `mod_exp` with `base = message`, `exp = public_key`, and `mod = modulus` to compute `ciphertext = message^e % n`.
+
+The encrypted message (ciphertext) can be securely transmitted since it requires the private key for decryption.
+
+7. Decryption - `decrypt(int ciphertext, int private_key, int modulus)`
+
+This function decrypts an encrypted message:
+- It uses `mod_exp` with `base = ciphertext`, `exp = private_key`, and `mod = modulus` to compute `message = ciphertext^d % n`.
+
+Since only the private key owner can decrypt the message, this ensures confidentiality.
+
+8. Simple Hash Function - `simple_hash(const char *message)`
+
+This function generates a simple hash of a message (string):
+- It iterates over each character in the message, shifting `hash` by 5 bits (similar to multiplying by 32) and adding the ASCII value of each character.
+
+This simple hash function is used in the digital signature process for a basic integrity check of the message.
+
+9. Message Signing - `sign_message(int message_hash, int private_key, int modulus)`
+
+This function creates a digital signature for a message hash using the private key:
+- It calls `mod_exp` with `base = message_hash`, `exp = private_key`, and `mod = modulus` to compute `signature = message_hash^d % n`.
+
+The signature can later be verified using the public key to ensure the message’s integrity and authenticity.
+
+10. Signature Verification - `verify_signature(int signature, int public_key, int modulus, int original_message_hash)`
+
+This function verifies the digital signature:
+- It decrypts the `signature` using the `public_key` (essentially reversing the signing process).
+- If the decrypted value matches `original_message_hash`, the signature is verified, indicating the message is authentic and unchanged.
+
+11. Main Program Execution - `main()`
+
+The `main()` function demonstrates the usage of the RSA cryptosystem:
+1. Key Generation: Calls `generate_keys` to create the RSA keys.
+2. Message Encryption and Decryption:
+   - Prompts the user to enter a numeric message, encrypts it, and displays the encrypted message.
+   - Decrypts the message and displays the original message, proving encryption and decryption work.
+3. Hashing:
+   - Accepts a message string, computes its hash using `simple_hash`, and displays it.
+4. Digital Signature:
+   - Signs the message hash with the private key and displays the signature.
+   - Verifies the signature using the public key and confirms if it matches the original hash, proving message authenticity.
+
+This `main()` function helps demonstrate each aspect of the RSA algorithm in a straightforward manner.
